@@ -49,8 +49,132 @@ function entriesFor(id){
 function shareFrom(id){const e=exercises.find(x=>x.id===id),all=entriesFor(id),selected=[...document.querySelectorAll(`[data-share-item="${id}"]:checked`)].map(x=>Number(x.dataset.shareIndex)),entries=all.filter((x,i)=>selected.includes(i));if(!entries.length){alert("Välj minst ett svar att dela.");return}window.shareDraft=`${e.title}\n\n`+entries.map(([k,v])=>`${k}: ${v}`).join('\n\n');jump('share')}
 function shareText(){const reason=$('#shareReason')?.value||'talk';const lead={read:'Jag vill visa dig något jag har skrivit. Du behöver inte göra något just nu.',talk:'Jag vill dela något med dig. Kan vi prata om det när vi får en stund?',help:'Jag behöver hjälp med något jag funderat på. Kan du hjälpa mig?'}[reason];return lead+'\n\n'+($('#shareText')?.value||'')}
 async function sendShare(){const text=shareText();if(navigator.share){try{await navigator.share({title:'Något jag vill dela',text})}catch(e){if(e.name!=='AbortError')alert('Det gick inte att öppna delningsmenyn. Du kan kopiera texten i stället.')}}else{await navigator.clipboard.writeText(text);alert('Texten är kopierad. Klistra in den i ett meddelande till den du väljer.')}}
-const enc=new TextEncoder(),dec=new TextDecoder();function b64(bytes){let str='';for(let i=0;i<bytes.length;i+=16384){str+=String.fromCharCode(...bytes.subarray(i,i+16384))}return btoa(str)}function unb64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}async function keyFor(pass,salt){let key=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:310000,hash:'SHA-256'},key,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}function download(name,content,type){let a=document.createElement('a'),url=URL.createObjectURL(new Blob([content],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}async function backup(){let pass=$('#backupPass').value;if(pass.length<12)return alert('Välj ett lösenord med minst 12 tecken.');await flush();const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await keyFor(pass,salt),payload=enc.encode(JSON.stringify({version:1,answers:await readAll()})),cipher=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,payload));download('mina-kanslor-sakerhetskopia-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({format:'mina-kanslor-backup',version:1,salt:b64(salt),iv:b64(iv),data:b64(cipher)}),'application/json');$('#backupPass').value='';alert('Säkerhetskopian har skapats. Kontrollera att filen har sparats på ett säkert ställe.')}async function restore(){const file=$('#restoreFile').files[0],pass=$('#restorePass').value;if(!file||!pass)return alert('Välj en fil och ange lösenord.');if(file.size>2000000)return alert('Filen är för stor.');try{const b=JSON.parse(await file.text());if(b.format!=='mina-kanslor-backup'||b.version!==1)throw Error('Fel filformat');const key=await keyFor(pass,unb64(b.salt));const plaintext=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(b.iv)},key,unb64(b.data));const obj=JSON.parse(dec.decode(plaintext));if(obj.version!==1||!obj.answers||typeof obj.answers!=='object'||Array.isArray(obj.answers))throw Error('Ogiltigt innehåll');if(!confirm('Vill du ersätta alla nuvarande svar med innehållet i säkerhetskopian?'))return;await removeAll();cache={};for(const [k,v]of Object.entries(obj.answers)){if(typeof k==='string'&&k.length<100&&(typeof v==='string'||typeof v==='boolean'||Array.isArray(v)))await put(k,v)}alert('Svaren har återställts.');jump('home')}catch(e){alert('Det gick inte att återställa filen. Kontrollera lösenordet och filen.')}}
-async function toggleBodyPart(part){const k='body_'+(field('body_current')||'Glad'),old=field(k),arr=Array.isArray(old)?[...old]:[];await put(k,arr.includes(part)?arr.filter(x=>x!==part):[...arr,part]);render()}document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.body-region')){e.preventDefault();toggleBodyPart(e.target.dataset.bodyPart)}});document.addEventListener('input',e=>{if(e.target.dataset.field)setField(e.target.dataset.field,e.target.value)});document.addEventListener('change',e=>{
+const enc=new TextEncoder(),dec=new TextDecoder();function b64(bytes){let str='';for(let i=0;i<bytes.length;i+=16384){str+=String.fromCharCode(...bytes.subarray(i,i+16384))}return btoa(str)}function unb64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}async function keyFor(pass,salt){let key=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:310000,hash:'SHA-256'},key,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}function download(name,content,type){let a=document.createElement('a'),url=URL.createObjectURL(new Blob([content],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}async function backup(){let pass=$('#backupPass').value;if(pass.length<12)return alert('Välj ett lösenord med minst 12 tecken.');await flush();const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await keyFor(pass,salt),payload=enc.encode(JSON.stringify({version:1,answers:await readAll()})),cipher=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,payload));download('mina-kanslor-sakerhetskopia-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({format:'mina-kanslor-backup',version:1,salt:b64(salt),iv:b64(iv),data:b64(cipher)}),'application/json');$('#backupPass').value='';alert('Säkerhetskopian har skapats. Kontrollera att filen har sparats på ett säkert ställe.')}async function restore(){const file=$('#restoreFile').files[0],pass=$('#restorePass').value;if(!file||!pass)return alert('Välj en fil och ange lösenord.');if(file.size>2000000)return alert('Filen är för stor.');try{const b=JSON.parse(await file.text());if(b.format!=='mina-kanslor-backup'||b.version!==1)throw Error('Fel filformat');const key=await keyFor(pass,unb64(b.salt));const plaintext=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(b.iv)},key,unb64(b.data));const obj=JSON.parse(dec.decode(plaintext));if(obj.version!==1||!obj.answers||typeof obj.answers!=='object'||Array.isArray(obj.answers))throw Error('Ogiltigt innehåll');if(!confirm('Vill du ersätta alla nuvarande svar med innehållet i säkerhetskopian?'))return;await removeAll();cache={};bodyUndoStack.length=0;for(const [k,v]of Object.entries(obj.answers)){if(typeof k==='string'&&k.length<100&&(typeof v==='string'||typeof v==='boolean'||Array.isArray(v)))await put(k,v)}alert('Svaren har återställts.');jump('home')}catch(e){alert('Det gick inte att återställa filen. Kontrollera lösenordet och filen.')}}
+async function toggleBodyPart(part){const k='body_'+(field('body_current')||'Glad'),old=field(k),arr=Array.isArray(old)?[...old]:[];await put(k,arr.includes(part)?arr.filter(x=>x!==part):[...arr,part]);render()}document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.body-region')){e.preventDefault();toggleBodyPart(e.target.dataset.bodyPart)}});document.addEventListener('input',e=>{if(e.target.dataset.field)setField(e.target.dataset.field,e.target.value)});
+/* Kroppskartan: en prick kan flyttas med fingret eller piltangenterna.
+   Svaren är lokala och det är bara de befintliga markeringarna som ändras. */
+const bodyUndoStack=[];
+let activeBodyPointer=null;
+function putBodyMarks(key,marks){
+  const previous=field(key);
+  if(Array.isArray(previous)){
+    bodyUndoStack.push({emotion:key.slice('body_marks_'.length),previous:previous.map(p=>p?{...p}:p)});
+    if(bodyUndoStack.length>60)bodyUndoStack.shift();
+  }
+  return put(key,marks);
+}
+function bodySvgPoint(board,e){
+  const matrix=board.getScreenCTM()?.inverse();
+  if(!matrix)return null;
+  const point=board.createSVGPoint();
+  point.x=e.clientX;point.y=e.clientY;
+  return point.matrixTransform(matrix);
+}
+function isBodyPoint(board,p){
+  if(!p)return false;
+  const test=board.createSVGPoint();test.x=p.x;test.y=p.y;
+  let supported=false;
+  for(const shape of board.querySelectorAll('.body-surface path,.body-surface circle')){
+    if(typeof shape.isPointInFill!=='function')continue;
+    supported=true;
+    if(shape.isPointInFill(test))return true;
+  }
+  // Reserv för äldre webbläsare där isPointInFill saknas.
+  return !supported&&p.x>=69&&p.x<=271&&p.y>=33&&p.y<=463;
+}
+function clearBodyGesture(){
+  if(!activeBodyPointer)return null;
+  const gesture=activeBodyPointer;
+  activeBodyPointer=null;
+  gesture.board.classList.remove('body-is-dragging');
+  if(gesture.board.hasPointerCapture?.(gesture.pointerId)){
+    try{gesture.board.releasePointerCapture(gesture.pointerId)}catch{}
+  }
+  return gesture;
+}
+document.addEventListener('pointerdown',e=>{
+  if(page!=='body'||!e.isPrimary)return;
+  const board=e.target.closest('[data-body-board]');
+  if(!board)return;
+  const point=bodySvgPoint(board,e),dot=e.target.closest('[data-body-dot-index]');
+  if(!point||(!dot&&!e.target.closest('[data-body-surface]')))return;
+  const emotion=field('body_current')||'Glad';
+  const side=field('body_v2_side')||'front';
+  const marks=field('body_marks_'+emotion);
+  const index=dot?Number(dot.dataset.bodyDotIndex):MinaFeatures.nearestMarkIndex(marks,side,point.x,point.y,19);
+  const moving=Number.isInteger(index)&&index>=0&&Array.isArray(marks)&&marks[index]?.side===side;
+  activeBodyPointer={
+    board,emotion,pointerId:e.pointerId,startClientX:e.clientX,startClientY:e.clientY,
+    type:moving?'move':'new',index:moving?index:-1,
+    startPoint:point,lastValidPoint:point,didMove:false
+  };
+  if(moving)board.classList.add('body-is-dragging');
+  try{board.setPointerCapture?.(e.pointerId)}catch{}
+  if(e.cancelable)e.preventDefault();
+},{passive:false});
+document.addEventListener('pointermove',e=>{
+  const g=activeBodyPointer;
+  if(!g||g.pointerId!==e.pointerId)return;
+  const point=bodySvgPoint(g.board,e);
+  if(!point)return;
+  g.didMove=g.didMove||Math.hypot(e.clientX-g.startClientX,e.clientY-g.startClientY)>4;
+  if(isBodyPoint(g.board,point))g.lastValidPoint=point;
+  if(g.type==='move'&&g.didMove){
+    const handle=g.board.querySelector('[data-body-dot-index="'+g.index+'"]');
+    if(handle)for(const circle of handle.querySelectorAll('circle')){
+      circle.setAttribute('cx',g.lastValidPoint.x);
+      circle.setAttribute('cy',g.lastValidPoint.y);
+    }
+  }
+  if(e.cancelable)e.preventDefault();
+},{passive:false});
+document.addEventListener('pointerup',async e=>{
+  if(!activeBodyPointer||activeBodyPointer.pointerId!==e.pointerId)return;
+  const g=clearBodyGesture();
+  if(!g)return;
+  const point=bodySvgPoint(g.board,e);
+  const target=isBodyPoint(g.board,point)?point:g.lastValidPoint;
+  if(!target){if(g.type==='move')render();return}
+  try{
+    if(g.type==='move'){
+      // Ett tryck på en befintlig prick flyttar ingenting och skapar ingen ny prick.
+      if(!g.didMove){return}
+      await MinaFeatures.moveMark(cache,field,putBodyMarks,g.index,target.x,target.y);
+    }else{
+      const emotion=g.emotion;
+      await put('body_none_'+emotion,false);
+      await put('body_whole_'+emotion,false);
+      await MinaFeatures.placeMark(cache,field,putBodyMarks,target.x,target.y);
+    }
+    render();
+  }catch(err){
+    console.error('Kunde inte uppdatera markeringen',err);
+    render();
+  }
+});
+document.addEventListener('pointercancel',e=>{
+  if(activeBodyPointer?.pointerId!==e.pointerId)return;
+  const g=clearBodyGesture();
+  if(g?.type==='move')render();
+});
+document.addEventListener('keydown',async e=>{
+  const handle=e.target.closest('[data-body-dot-index]');
+  if(!handle||page!=='body'||!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))return;
+  e.preventDefault();
+  const index=Number(handle.dataset.bodyDotIndex);
+  const emotion=field('body_current')||'Glad';
+  const existing=field('body_marks_'+emotion);
+  if(!Array.isArray(existing)||!existing[index])return;
+  const point=existing[index],step=e.shiftKey?2:7;
+  const x=Number(point.x)+(e.key==='ArrowLeft'?-step:e.key==='ArrowRight'?step:0);
+  const y=Number(point.y)+(e.key==='ArrowUp'?-step:e.key==='ArrowDown'?step:0);
+  const board=handle.closest('[data-body-board]');
+  if(!board||!isBodyPoint(board,{x,y}))return;
+  await MinaFeatures.moveMark(cache,field,putBodyMarks,index,x,y);
+  render();
+  document.querySelector('[data-body-dot-index="'+index+'"]')?.focus();
+});
+document.addEventListener('change',e=>{
   if(e.target.dataset.singleField){put(e.target.dataset.singleField,e.target.value).then(render);return}
   if(e.target.dataset.bodyNone){
     const emotion=field('body_current')||'Glad',marks=field('body_marks_'+emotion);
@@ -62,16 +186,9 @@ async function toggleBodyPart(part){const k='body_'+(field('body_current')||'Gla
     put('body_none_'+emotion,e.target.checked).then(render);return;
   }
   if(e.target.dataset.done){put('done_'+e.target.dataset.done,e.target.checked).then(render)}if(e.target.id==='bodyEmotion'){put('body_current',e.target.value).then(render)}});document.addEventListener('click',async e=>{
-  const board=e.target.closest('[data-body-board]');
-  if(board&&e.target.closest('[data-body-surface]')){
-    const p=board.createSVGPoint();p.x=e.clientX;p.y=e.clientY;
-    const inv=board.getScreenCTM()?.inverse();if(!inv)return;
-    const xy=p.matrixTransform(inv);
-    const emotion=field('body_current')||'Glad';
-    await put('body_none_'+emotion,false);
-    await put('body_whole_'+emotion,false);
-    await MinaFeatures.placeMark(cache,field,put,xy.x,xy.y);render();return;
-  }
+  // Pointerhändelser hanterar nya och flyttade markeringar.
+  // Vanliga click-händelser på figuren får aldrig skapa dubbla prickar.
+  if(e.target.closest('[data-body-board]'))return;
   const control=e.target.closest('button');
   if(control&&control.dataset.bodyWhole){
     const emotion=field('body_current')||'Glad',whole=Boolean(field('body_whole_'+emotion));
@@ -89,16 +206,25 @@ async function toggleBodyPart(part){const k='body_'+(field('body_current')||'Gla
   if(control&&control.dataset.bodyStrength){await put('body_v2_intensity',control.dataset.bodyStrength);render();return}
   if(control&&control.dataset.bodyPlace){
     const emotion=field('body_current')||'Glad';await put('body_none_'+emotion,false);await put('body_whole_'+emotion,false);
-    await MinaFeatures.placeMark(cache,field,put,Number(control.dataset.x),Number(control.dataset.y));render();return;
+    await MinaFeatures.placeMark(cache,field,putBodyMarks,Number(control.dataset.x),Number(control.dataset.y));render();return;
   }
   if(control&&control.dataset.bodyUndo){
-    const emotion=field('body_current')||'Glad',k='body_marks_'+emotion,arr=field(k);
-    if(Array.isArray(arr)&&arr.length){await put(k,arr.slice(0,-1));render()}return;
+    const emotion=field('body_current')||'Glad',key='body_marks_'+emotion;
+    let i=bodyUndoStack.length-1;
+    while(i>=0&&bodyUndoStack[i].emotion!==emotion)i--;
+    if(i>=0){
+      const entry=bodyUndoStack.splice(i,1)[0];
+      await put(key,entry.previous);
+    }else{
+      const arr=field(key);
+      if(Array.isArray(arr)&&arr.length)await put(key,arr.slice(0,-1));
+    }
+    render();return;
   }
   if(control&&control.dataset.bodyClear){
     const emotion=field('body_current')||'Glad';
     if(confirm('Vill du ta bort markeringarna för '+emotion+'?')){
-      await put('body_marks_'+emotion,[]);render();
+      await putBodyMarks('body_marks_'+emotion,[]);render();
     }return;
   }
-  const region=e.target.closest('.body-region');if(region){await toggleBodyPart(region.dataset.bodyPart);return}const b=e.target.closest('button');if(!b)return;if(b.dataset.nav)return jump(b.dataset.nav);if(b.dataset.colorName){await put('color_'+b.dataset.colorName,b.dataset.color);return render()}if(b.dataset.choice){const k=b.dataset.choice,v=b.dataset.value,old=field(k),arr=Array.isArray(old)?[...old]:(old?[old]:[]);await put(k,arr.includes(v)?arr.filter(x=>x!==v):[...arr,v]);return render()}if(b.dataset.bodyPart){await toggleBodyPart(b.dataset.bodyPart);return}if(b.dataset.shareEx)return shareFrom(b.dataset.shareEx);const a=b.dataset.action;if(!a)return;if(a==='sendShare')return sendShare();if(a==='copyShare'){try{await navigator.clipboard.writeText(shareText());alert('Texten är kopierad.')}catch{alert('Markera och kopiera texten manuellt.')}return}if(a==='backup')return backup();if(a==='restore')return restore();if(a==='erase'){if(confirm('Vill du verkligen radera alla svar från den här enheten?')&&confirm('Sista kontrollen: Alla sparade svar raderas.')){await removeAll();cache={};jump('home')}return}jump(a)});$('#settingsBtn').addEventListener('click',()=>jump('settings'));(async()=>{try{db=await dbOpen();cache=await readAll();render();if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(console.warn)}catch(e){view.innerHTML='<h1>Det gick inte att öppna lagringen</h1><p>Den här appen behöver lokal lagring för att skydda dina svar. Prova att öppna den i Safari eller Chrome, inte i privat läge.</p>'}})();
+  const region=e.target.closest('.body-region');if(region){await toggleBodyPart(region.dataset.bodyPart);return}const b=e.target.closest('button');if(!b)return;if(b.dataset.nav)return jump(b.dataset.nav);if(b.dataset.colorName){await put('color_'+b.dataset.colorName,b.dataset.color);return render()}if(b.dataset.choice){const k=b.dataset.choice,v=b.dataset.value,old=field(k),arr=Array.isArray(old)?[...old]:(old?[old]:[]);await put(k,arr.includes(v)?arr.filter(x=>x!==v):[...arr,v]);return render()}if(b.dataset.bodyPart){await toggleBodyPart(b.dataset.bodyPart);return}if(b.dataset.shareEx)return shareFrom(b.dataset.shareEx);const a=b.dataset.action;if(!a)return;if(a==='sendShare')return sendShare();if(a==='copyShare'){try{await navigator.clipboard.writeText(shareText());alert('Texten är kopierad.')}catch{alert('Markera och kopiera texten manuellt.')}return}if(a==='backup')return backup();if(a==='restore')return restore();if(a==='erase'){if(confirm('Vill du verkligen radera alla svar från den här enheten?')&&confirm('Sista kontrollen: Alla sparade svar raderas.')){await removeAll();cache={};bodyUndoStack.length=0;jump('home')}return}jump(a)});$('#settingsBtn').addEventListener('click',()=>jump('settings'));(async()=>{try{db=await dbOpen();cache=await readAll();render();if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(console.warn)}catch(e){view.innerHTML='<h1>Det gick inte att öppna lagringen</h1><p>Den här appen behöver lokal lagring för att skydda dina svar. Prova att öppna den i Safari eller Chrome, inte i privat läge.</p>'}})();
