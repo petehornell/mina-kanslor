@@ -58,6 +58,7 @@ if(nav.dataset.viewRole!==userRole){
   nav.dataset.viewRole=userRole||'none';
 }
 nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.nav===page));
+const settingsButton=$('#settingsBtn');if(settingsButton)settingsButton.hidden=!userRole||page==='welcome';
 const switchBtn=$('#switchRoleBtn');
 if(switchBtn){
  switchBtn.hidden=!userRole||page==='welcome';
