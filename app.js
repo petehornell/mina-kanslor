@@ -132,6 +132,7 @@ document.addEventListener('pointerup',async e=>{
   if(!activeBodyPointer||activeBodyPointer.pointerId!==e.pointerId)return;
   const g=clearBodyGesture();
   if(!g)return;
+  g.didMove=g.didMove||Math.hypot(e.clientX-g.startClientX,e.clientY-g.startClientY)>4;
   const point=bodySvgPoint(g.board,e);
   const target=isBodyPoint(g.board,point)?point:g.lastValidPoint;
   if(!target){if(g.type==='move')render();return}
