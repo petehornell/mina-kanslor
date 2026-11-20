@@ -1,6 +1,6 @@
 /* Mina känslor: lokalt cachade appfiler, inga sparade svar i service worker. */
-const CACHE='mina-kanslor-v2-4';
-const ASSETS=['./','./index.html','./style.css?v=2.4','./features.js?v=2.4','./guides.js?v=2.4','./conversation.js?v=2.4','./app.js?v=2.4','./manifest.webmanifest','./icon.svg'];
+const CACHE='mina-kanslor-v2-5';
+const ASSETS=['./','./index.html','./style.css?v=2.5','./features.js?v=2.5','./guides.js?v=2.5','./conversation.js?v=2.5','./app.js?v=2.5','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
