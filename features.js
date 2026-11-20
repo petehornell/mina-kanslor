@@ -110,20 +110,21 @@ const MinaFeatures = (() => {
     const all=ctx.field('body_marks_'+emotion);
     const marks=Array.isArray(all)?all:[];
     const whole=Boolean(ctx.field('body_whole_'+emotion));
-    const filtered=marks.filter(p=>p&&p.side===side);
+    const filtered=marks.map((p,index)=>p?{...p,sourceIndex:index}:null).filter(p=>p&&p.side===side);
     const earlier=ctx.field('body_'+emotion);
     let h=ctx.intro('Var känns känslan i kroppen?','Välj en känsla. Markera var just du brukar känna den – på framsidan eller baksidan.','DEL 1 · FÖRSTÅ KÄNSLOR');
     h+=`<div class="notice"><strong>Din kropp, dina upplevelser.</strong> Det finns inget rätt ställe. Det är också okej att inte känna något särskilt.</div>`;
     h+=`<label for="bodyEmotion">Vilken känsla vill du utforska?</label><select id="bodyEmotion">${ctx.emotions.map(x=>`<option ${emotion===x?'selected':''}>${ctx.esc(x)}</option>`).join('')}</select>`;
     h+=`<div class="card detailed-body"><div class="body-view-tabs" role="group" aria-label="Välj sida av kroppen">${[['front','Framsida'],['back','Baksida']].map(([k,t])=>`<button class="chip ${side===k?'on':''}" data-body-view="${k}" aria-pressed="${side===k}">${t}</button>`).join('')}</div>`;
-    h+=`<p class="small muted">Tryck på kroppen för att sätta en prick. Varje prick visar <strong>din egen</strong> upplevelse.</p>`;
-    h+=`<svg class="body-drawing" data-body-board="${side}" viewBox="40 15 260 460" role="img" aria-label="Kroppsfigur ${side==='front'?'framifrån':'bakifrån'} med ${filtered.length} markeringar. Använd även knapparna för kroppsdelar nedan."><title>Kroppsfigur – ${side==='front'?'fram':'bak'}sida</title>${whole?bodySilhouette.replace('class="body-surface"','class="body-surface all-over"'):bodySilhouette}${side==='back'?'<path class="body-hint" d="M170 150 L170 250 M138 175 Q170 168 202 175"/>':''}${filtered.map((p,i)=>{const item=sensations.find(s=>s.id===p.sensation)||sensations[7];const x=Math.max(60,Math.min(280,Number(p.x)||170)),y=Math.max(35,Math.min(464,Number(p.y)||150));return `<circle class="body-dot" cx="${x}" cy="${y}" r="${6+Number(p.intensity||1)*2.3}" fill="${item.color}" stroke="white" stroke-width="2.5" aria-hidden="true"/>`}).join('')}</svg>`;
+    h+=`<div class="body-edit-toolbar" role="group" aria-label="Redigera kroppskartan"><button type="button" class="btn secondary" data-body-undo="1" ${marks.length?'':'disabled'}>↶ Ångra senaste</button><button type="button" class="btn ghost" data-body-clear="1" ${marks.length?'':'disabled'}>Rensa prickar</button></div>`;
+    h+=`<p class="small muted body-help">Tryck på kroppen för en ny prick. Håll i en prick och dra den dit du vill flytta den.</p>`;
+    h+=`<svg class="body-drawing" data-body-board="${side}" viewBox="40 15 260 460" role="img" aria-label="Kroppsfigur ${side==='front'?'framifrån':'bakifrån'} med ${filtered.length} markeringar. Använd även knapparna för kroppsdelar nedan."><title>Kroppsfigur – ${side==='front'?'fram':'bak'}sida</title>${whole?bodySilhouette.replace('class="body-surface"','class="body-surface all-over"'):bodySilhouette}${side==='back'?'<path class="body-hint" d="M170 150 L170 250 M138 175 Q170 168 202 175"/>':''}${filtered.map(p=>{const item=sensations.find(s=>s.id===p.sensation)||sensations[7];const x=Math.max(60,Math.min(280,Number(p.x)||170)),y=Math.max(35,Math.min(464,Number(p.y)||150));const radius=11+Number(p.intensity||1)*2;return `<g class="body-dot-handle" data-body-dot-index="${p.sourceIndex}" role="button" tabindex="0" aria-label="Flytta markering ${p.sourceIndex+1}: ${item.label}. Dra med fingret eller använd piltangenterna."><title>Dra för att flytta markeringen</title><circle class="body-dot-hit" cx="${x}" cy="${y}" r="${Math.max(22,radius+7)}" fill="transparent"/><circle class="body-dot" cx="${x}" cy="${y}" r="${radius}" fill="${item.color}" stroke="white" stroke-width="3"/></g>`}).join("")}</svg>`;
     h+=`<div class="body-mark-count" aria-live="polite">${marks.length} markering${marks.length===1?'':'ar'} för ${ctx.esc(emotion)} ${marks.length?'· senast tillagd kan ångras':''}</div>`;
     h+=`<div class="body-all-choice"><button class="chip ${whole?'on':''}" data-body-whole="1" aria-pressed="${whole}">✳ Hela kroppen</button> <span class="small muted">Välj om känslan märks överallt.</span></div>`;
     h+=`<h3>Var känns det? <span class="muted small">Snabbval</span></h3><div class="body-location-buttons">${landmarks[side].map(([name,x,y])=>`<button class="chip" data-body-place="${ctx.esc(name)}" data-x="${x}" data-y="${y}">${ctx.esc(name)}</button>`).join('')}</div>`;
     h+=`<h3>Hur känns det där?</h3><div class="chiprow" role="group" aria-label="Välj kroppslig upplevelse">${sensations.map(s=>`<button class="chip sensation ${sense===s.id?'on':''}" data-body-sense="${s.id}" aria-pressed="${sense===s.id}"><span class="sense-dot" style="background:${s.color}"></span>${s.label}</button>`).join('')}</div>`;
     h+=`<h3>Hur starkt?</h3><div class="chiprow" role="group" aria-label="Välj styrka">${[[1,'Lite'],[2,'Mittemellan'],[3,'Mycket']].map(([v,label])=>`<button class="chip ${strength===v?'on':''}" data-body-strength="${v}" aria-pressed="${strength===v}">${label}</button>`).join('')}</div>`;
-    h+=`<div class="actions"><button class="btn secondary" data-body-undo="1" ${marks.length?'':'disabled'}>↶ Ångra senaste</button><button class="btn ghost" data-body-clear="1" ${marks.length?'':'disabled'}>Rensa för ${ctx.esc(emotion)}</button></div>`;
+
     h+=`<div class="body-empty-choice"><label class="check"><input type="checkbox" data-body-none="1" ${ctx.field('body_none_'+emotion)?'checked':''}> Jag märker ingen särskild plats för den här känslan</label><p class="small muted">Du får ändra dig och markera senare.</p></div>`;
     if(Array.isArray(earlier)&&earlier.length)h+=`<div class="notice small">Tidigare markeringar från den äldre versionen: ${ctx.esc(earlier.join(', '))}. De finns kvar i dina sparade svar.</div>`;
     h+='</div>';
@@ -143,15 +144,39 @@ const MinaFeatures = (() => {
     return keys.filter(k=>cache[k]!==undefined&&cache[k]!==''&&!(Array.isArray(cache[k])&&!cache[k].length))
        .map(k=>[labels[k],Array.isArray(cache[k])?cache[k].join(', '):String(cache[k])]);
   }
+  function nearestMarkIndex(marks,side,x,y,maxDistance=20){
+    if(!Array.isArray(marks))return -1;
+    let closest=-1,best=maxDistance*maxDistance;
+    marks.forEach((p,i)=>{
+      if(!p||p.side!==side)return;
+      const px=Number(p.x),py=Number(p.y);
+      if(!Number.isFinite(px)||!Number.isFinite(py))return;
+      const d=(px-x)**2+(py-y)**2;
+      if(d<best){best=d;closest=i}
+    });
+    return closest;
+  }
+  function moveMark(cache,field,put,index,x,y){
+    const emotion=field('body_current')||'Glad',key='body_marks_'+emotion;
+    const existing=cache[key];
+    if(!Array.isArray(existing)||!existing[index])return Promise.resolve(false);
+    const next=existing.map((p,i)=>i===index?{
+      ...p,x:Math.round(x*10)/10,y:Math.round(y*10)/10
+    }:p);
+    return put(key,next);
+  }
   function placeMark(cache,field,put,x,y){
-    const emo=field('body_current')||'Glad';const key='body_marks_'+emo;
+    const emo=field('body_current')||'Glad',key='body_marks_'+emo;
     const old=Array.isArray(cache[key])?cache[key]:[];
-    const m={side:field('body_v2_side')||'front',x:Math.round(x*10)/10,y:Math.round(y*10)/10,sensation:field('body_v2_sensation')||'pirr',intensity:Number(field('body_v2_intensity')||2)};
+    const side=field('body_v2_side')||'front';
+    const nearest=nearestMarkIndex(old,side,x,y,20);
+    if(nearest>=0)return moveMark(cache,field,put,nearest,x,y);
+    const m={side,x:Math.round(x*10)/10,y:Math.round(y*10)/10,sensation:field('body_v2_sensation')||'pirr',intensity:Number(field('body_v2_intensity')||2)};
     return put(key,[...old.slice(-119),m]);
   }
   function bodySummary(emo,marks){
     return marks.map(m=>{const nearest=landmarks[m.side]||landmarks.front;let location='Kroppen';let mind=1e9;for(const [name,x,y] of nearest){const d=(x-m.x)**2+(y-m.y)**2;if(d<mind){mind=d;location=name}}
       const s=sensations.find(x=>x.id===m.sensation)?.label||'Upplevelse';return `${m.side==='back'?'Bak':'Fram'}: ${location} – ${s} (${['','lite','mellan','mycket'][m.intensity]||'ospecificerat'})`;}).join('\n');
   }
-  return {extra,form,labels,renderExercise,showBody,adultPage,getEntries,landmarks,sensations,placeMark,bodySummary};
+  return {extra,form,labels,renderExercise,showBody,adultPage,getEntries,landmarks,sensations,placeMark,moveMark,nearestMarkIndex,bodySummary};
 })();
