@@ -1,9 +1,9 @@
 # Mina känslor
 
-En fristående, mobilanpassad webbapp för **ungdomar och deras viktiga vuxna**. **Version 2.3** har två valbara vyer:
+En fristående, mobilanpassad webbapp för **ungdomar och deras viktiga vuxna**. **Version 2.4** har två valbara vyer:
 
-- **Ungdom:** 17 övningar i tre delar, med frivilliga, fiktiva exempel på känslor och svar. Exemplen är inte facit och fyller inte i några användarsvar.
-- **Vuxen/förälder:** 9 korta guider med samtalsexempel och reflektionsfrågor, med lokala anteckningar åtskilda i gränssnittet från ungdomens övningar.
+- **Ungdom:** 17 övningar i tre delar, med frivilliga, fiktiva exempel på känslor och svar. Exemplen är inte facit och fyller inte i några användarsvar. Dessutom finns 24 samtalsstartare för att kunna be om ett samtal, visa en mening eller dela den frivilligt.
+- **Vuxen/förälder:** 9 korta guider med samtalsexempel och reflektionsfrågor samt 36 samtalskort med öppna frågor och frivilliga följdfrågor. Egna anteckningar hålls åtskilda i gränssnittet från ungdomens övningar.
 
 Ungdomens 17 övningar:
 1. Förstå känslor (inklusive en detaljerad kroppskarta med framsida/baksida och egna markeringar)
@@ -20,6 +20,7 @@ Push till `main` startar en publicering enligt `.github/workflows/deploy-pages.y
 
 ## Privata svar och säkerhetskopior
 - Användarnas svar sparas **endast på deras enhet**, i webbläsarens IndexedDB (`mina-kanslor`, object store `answers`). Både ungdomssvar, vuxenanteckningar och val av vy ligger i samma lokala databas om de använder samma webbläsarprofil.
+- Kortval och samtalsfrågor lagras inte och varken samtal eller svar spelas in.
 - Ingen inloggning, serverdatabas, analysmätning eller automatiserad delning. **Vyvalet är ingen åtkomstkontroll:** den som kan använda en olåst enhet kan växla till ungdomsvyn och se lokala svar där. Använd helst separata enheter.
 - Lokala svar är **inte krypterade i webbläsarens lagring**. En annan person med tillgång till enheten och webbläsarprofilen kan eventuellt läsa dem.
 - Säkerhetskopior och funktionen ”Radera alla svar” omfattar samtliga sparade svar på den aktuella enheten, inklusive vuxenanteckningar.
@@ -29,7 +30,7 @@ Push till `main` startar en publicering enligt `.github/workflows/deploy-pages.y
 - Spara **aldrig** användarsvar, säkerhetskopior, hälsouppgifter eller lösenord i detta publika repository.
 
 ## Förvaltning
-Frontend: `index.html`, `style.css`, `app.js`, `features.js`, `guides.js`, `manifest.webmanifest`, `sw.js` och `icon.svg`.
+Frontend: `index.html`, `style.css`, `app.js`, `features.js`, `guides.js`, `conversation.js`, `manifest.webmanifest`, `sw.js` och `icon.svg`.
 
 Vid nytt frontendinnehåll, uppdatera även cacheversionen i `sw.js` och respektive versionsparameter i `index.html`.
 
