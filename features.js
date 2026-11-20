@@ -35,7 +35,7 @@ const MinaFeatures = (() => {
       ['tools_move','När jag behöver röra mig',['Promenera','Springa en stund','Dansa','Träna','Sträcka på kroppen','Gå ut en stund']],
       ['tools_rest','När jag vill varva ner',['Lyssna på musik','Rita','Spela ett spel','Vila','Mys med djur','Lägg märke till rummet','Prata med någon']]
     ],prompts:[['tools_own','Har du något eget knep?'],['tools_result','Vad fungerade när du testade något?']]},
-    intensity:{intro:'En känsla kan komma långsamt eller väldigt snabbt. Det kan också vara olika olika dagar.',choices:[
+    intensity:{intro:'En känsla kan komma långsamt eller väldigt snabbt. Det kan också vara olika från dag till dag.',choices:[
       ['intensity_emotion','Vilken känsla tänker du på?',emotionList],
       ['intensity_speed','Hur snabbt brukar den komma?',['Smyger sig på','Ganska snabbt','Nästan direkt','Olika från gång till gång']],
       ['intensity_level','Hur stark brukar den kännas?',['1 – lite','2','3 – mellan','4','5 – mycket']]
@@ -68,7 +68,12 @@ const MinaFeatures = (() => {
     const e=extra.find(x=>x.id===id),f=form[id];if(!e||!f)return '';
     let h=ctx.intro(e.title,e.sub,'DEL '+e.section+' · '+(e.section===2?'HANTERA KÄNSLOR':'ARBETA VIDARE'));
     h+=`<div class="notice"><p>${ctx.esc(f.intro)}</p></div>`;
-    for(const [k,label,options] of f.choices||[]){h+=`<div class="card"><h3>${ctx.esc(label)}</h3>${ctx.chips(k,options)}</div>`}
+    for(const [k,label,options] of f.choices||[]){
+      const single=['intensity_emotion','intensity_speed','intensity_level'].includes(k);
+      if(single){
+        h+=`<div class="card"><label for="${k}">${ctx.esc(label)}</label><select id="${k}" data-single-field="${k}"><option value="">Välj om du vill</option>${options.map(x=>`<option value="${ctx.esc(x)}" ${ctx.field(k)===x?'selected':''}>${ctx.esc(x)}</option>`).join('')}</select></div>`;
+      }else h+=`<div class="card"><h3>${ctx.esc(label)}</h3>${ctx.chips(k,options)}</div>`;
+    }
     for(const [k,label,placeholder] of f.prompts||[])h+=ctx.textArea(k,label,placeholder);
     return h+ctx.status()+ctx.finish(id);
   }
