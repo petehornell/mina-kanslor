@@ -35,6 +35,7 @@ function entriesFor(id){
   return Object.entries(cache).filter(([k,v])=>prefix.some(p=>k.startsWith(p))&&!k.startsWith('body_current')&&!k.startsWith('body_v2_')&&!k.startsWith('done_')&&v!==''&&v!==false&&!(Array.isArray(v)&&!v.length)).map(([k,v])=>{
     if(k.startsWith('body_marks_'))return ['Kroppskarta – '+k.slice('body_marks_'.length),MinaFeatures.bodySummary(k.slice('body_marks_'.length),v)];
     if(k.startsWith('body_desc_'))return ['Beskrivning – '+k.slice('body_desc_'.length),String(v)];
+    if(k.startsWith('body_whole_'))return ['Kroppskarta – '+k.slice('body_whole_'.length),'Hela kroppen'];
     if(k.startsWith('body_none_'))return ['Kroppskarta – '+k.slice('body_none_'.length),'Ingen särskild plats'];
     let title=k.startsWith('color_')?'Färg för '+k.slice(6):({
       'colors_note':'Mina tankar','hidden_easy':'Lätt att visa','hidden_hard':'Svårt att visa',
@@ -57,6 +58,7 @@ async function toggleBodyPart(part){const k='body_'+(field('body_current')||'Gla
       if(!confirm('Vill du ersätta dina tidigare prickar för '+emotion+' med ”ingen särskild plats”?')){e.target.checked=false;return}
       put('body_marks_'+emotion,[]);
     }
+    if(e.target.checked)put('body_whole_'+emotion,false);
     put('body_none_'+emotion,e.target.checked).then(render);return;
   }
   if(e.target.dataset.done){put('done_'+e.target.dataset.done,e.target.checked).then(render)}if(e.target.id==='bodyEmotion'){put('body_current',e.target.value).then(render)}});document.addEventListener('click',async e=>{
@@ -67,14 +69,26 @@ async function toggleBodyPart(part){const k='body_'+(field('body_current')||'Gla
     const xy=p.matrixTransform(inv);
     const emotion=field('body_current')||'Glad';
     await put('body_none_'+emotion,false);
+    await put('body_whole_'+emotion,false);
     await MinaFeatures.placeMark(cache,field,put,xy.x,xy.y);render();return;
   }
   const control=e.target.closest('button');
+  if(control&&control.dataset.bodyWhole){
+    const emotion=field('body_current')||'Glad',whole=Boolean(field('body_whole_'+emotion));
+    const marks=field('body_marks_'+emotion);
+    if(!whole&&Array.isArray(marks)&&marks.length){
+      if(!confirm('Vill du ersätta prickarna för '+emotion+' med en markering för hela kroppen?'))return;
+      await put('body_marks_'+emotion,[]);
+    }
+    await put('body_whole_'+emotion,!whole);
+    if(!whole)await put('body_none_'+emotion,false);
+    render();return;
+  }
   if(control&&control.dataset.bodyView){await put('body_v2_side',control.dataset.bodyView);render();return}
   if(control&&control.dataset.bodySense){await put('body_v2_sensation',control.dataset.bodySense);render();return}
   if(control&&control.dataset.bodyStrength){await put('body_v2_intensity',control.dataset.bodyStrength);render();return}
   if(control&&control.dataset.bodyPlace){
-    const emotion=field('body_current')||'Glad';await put('body_none_'+emotion,false);
+    const emotion=field('body_current')||'Glad';await put('body_none_'+emotion,false);await put('body_whole_'+emotion,false);
     await MinaFeatures.placeMark(cache,field,put,Number(control.dataset.x),Number(control.dataset.y));render();return;
   }
   if(control&&control.dataset.bodyUndo){
