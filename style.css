@@ -84,3 +84,17 @@ textarea:focus-visible,select:focus-visible,button:focus-visible{outline:3px sol
  .role-switch{font-size:12px;padding:9px}
  .header-actions{gap:6px}
 }
+
+
+/* v2.4: samtalskort för ungdomar och vuxna */
+.conversation-card{border:1px solid #b7cfc3;border-radius:22px;background:linear-gradient(145deg,#e8f4ed,#fffaf1);padding:24px 21px;box-shadow:0 7px 23px #102e3910;margin:18px 0}
+.conversation-card-head{display:flex;justify-content:space-between;gap:15px;align-items:center;font-weight:800;color:#36756b;font-size:14px}
+.conversation-main{font-size:clamp(22px,5.5vw,29px);font-weight:750;line-height:1.35;margin:24px 0 21px;letter-spacing:-.017em}
+.conversation-follow{border-top:1px solid #c9d9d0;padding-top:16px;line-height:1.55}
+.conversation-follow p{font-size:17px;margin:7px 0 18px}
+.conversation-tip-toggle{color:#17685f;background:white;border:1px solid #b4cdc2;border-radius:12px;padding:11px 14px;font-size:14px;font-weight:750}
+.conversation-tip{background:#fff;border-radius:10px;padding:15px;margin-top:12px;line-height:1.55;font-size:15px}
+.conversation-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 10px}
+.conversation-actions .btn{width:100%;font-size:15px;padding:12px 8px}
+.conversation-random{width:100%;margin:3px 0 16px}
+@media(max-width:390px){.conversation-card{padding:20px 15px}.conversation-actions .btn{font-size:13px}}
