@@ -28,3 +28,6 @@ textarea:focus-visible,select:focus-visible,button:focus-visible{outline:3px sol
 .section-head .section-n{background:#e4f0eb;color:#1a6159;padding:5px 9px;border-radius:12px;font-weight:800;font-size:13px;white-space:nowrap}
 .exercise-item{min-height:95px!important;margin-bottom:9px!important}
 .exercise-item strong{margin:5px 0!important}
+
+.body-all-choice{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:9px 0 18px}.body-all-choice .chip{font-weight:750}
+.body-surface.all-over path,.body-surface.all-over circle{fill:#a1d3c1;stroke:#247365;stroke-width:3}
