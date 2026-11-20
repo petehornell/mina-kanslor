@@ -25,3 +25,6 @@
 .body-empty-choice{margin-top:18px;border-top:1px solid #dcebe5;padding-top:10px}.body-empty-choice .check{margin:0}.body-empty-choice .muted{margin:1px 0 0 30px}
 textarea:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid #ddad53;outline-offset:3px}
 @media(max-width:440px){.detailed-body{padding:15px 12px}.body-drawing{width:min(100%,260px)}.body-location-buttons .chip{font-size:13px}}
+.section-head .section-n{background:#e4f0eb;color:#1a6159;padding:5px 9px;border-radius:12px;font-weight:800;font-size:13px;white-space:nowrap}
+.exercise-item{min-height:95px!important;margin-bottom:9px!important}
+.exercise-item strong{margin:5px 0!important}
