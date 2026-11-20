@@ -1,42 +1,30 @@
 # Mina känslor
 
-En fristående, mobilanpassad webbapp för ungdomar som vill utforska och sätta ord på sina känslor.
+En fristående, mobilanpassad arbetsbok för ungdomar. **Version 2** har 17 övningar i tre delar:
+1. Förstå känslor (inklusive en detaljerad kroppskarta med framsida/baksida och egna markeringar)
+2. Hantera känslor
+3. Arbeta vidare
 
-## Funktioner (version 1.1)
+Appen är en egen bearbetning av teman i Region Västernorrlands arbetshäfte *Känslor för dig som ung* och är inte en officiell vårdtjänst. Forskning om kroppsliga känsloupplevelser: Nummenmaa m.fl. (2014), *Bodily maps of emotions*, PNAS, doi:10.1073/pnas.1321664111. Kroppskartan i denna app är en användarstyrd reflektionsövning, **inte** en medicinsk eller psykologisk tolkning.
 
-- Fem frivilliga övningar med korta instruktioner.
-- Färgval, flerval av känslor och klickbar kroppsfigur.
-- Automatiskt sparade svar i **IndexedDB på användarens egen enhet**.
-- Frivillig delning med telefonens delningsfunktion eller kopierad text.
-- Krypterad säkerhetskopia och återställning med eget lösenord.
-- PWA-installation och offline-stöd när nödvändiga filer har laddats in.
-
-Ingen inloggning och ingen serverdatabas för personliga svar. Koden är offentlig, men användarnas privata svar ska aldrig läggas i repositoryt.
-
-## GitHub Pages
-
-Publicera från `main` och `/(root)` under **Settings → Pages → Build and deployment**. Webbplatsen får adressen:
-
+## Publicering
+Statisk webbapp som publiceras via GitHub Actions och GitHub Pages:
 https://petehornell.github.io/mina-kanslor/
 
-Projektet är ren HTML/CSS/JavaScript och behöver ingen buildprocess.
+Push till `main` startar en publicering enligt `.github/workflows/deploy-pages.yml`.
 
-## Vid byte från Netlify
+## Privata svar och säkerhetskopior
+- Användarnas svar sparas **endast på deras enhet**, i webbläsarens IndexedDB (`mina-kanslor`, object store `answers`).
+- Ingen inloggning, databas, analysmätning eller automatiserad delning.
+- Lokala svar är **inte krypterade i webbläsarens lagring**. En annan person med tillgång till enheten och webbläsarprofilen kan eventuellt läsa dem.
+- Endast exporterade säkerhetskopior krypteras med AES-GCM och lösenordsbaserad nyckelhärledning (PBKDF2).
+- Säkerhetskopior krävs för att flytta svar mellan enheter eller webbplatser; browserdata följer inte med när man byter domän.
+- Installera gärna som PWA för offlineanvändning. Testa säkerhetskopiering och återställning innan du förlitar dig på dem.
+- Spara **aldrig** användarsvar, säkerhetskopior, hälsouppgifter eller lösenord i detta publika repository.
 
-Lokal webbläsarlagring hör till en specifik webbplatsadress. Sparade svar på Netlify flyttas inte automatiskt till GitHub Pages. Skapa först en krypterad säkerhetskopia på den gamla adressen och återställ den därefter på den nya. Kontrollera att svaren har följt med före radering av den gamla appen.
+## Förvaltning
+Frontend: `index.html`, `style.css`, `app.js`, `features.js`, `manifest.webmanifest`, `sw.js` och `icon.svg`.
 
-## Integritet och säkerhet
+Vid nytt frontendinnehåll, uppdatera även cacheversionen i `sw.js` och respektive versionsparameter i `index.html`.
 
-- Den som har tillgång till en upplåst telefon kan eventuellt läsa lokala svar. Detta är inte en ersättning för enhetens skärmlås.
-- Delning sker enbart när användaren själv väljer det; mottagarappen kan därefter spara den delade texten.
-- Rensning av webbläsardata eller byte av enhet kan ta bort svar. Gör säkerhetskopior vid behov.
-- Ingen spårning eller extern analysskript ingår.
-- Appen är inte en vårdtjänst och kan inte ersätta professionellt stöd.
-
-## Om materialet
-
-Övningarna är fristående digitala bearbetningar inspirerade av teman i Region Västernorrlands arbetsmaterial *Känslor för dig som ung*. Projektet är inte officiellt kopplat till regionen. Använd inte originalbilder eller längre textpartier från materialet utan att kontrollera rättigheterna först.
-
-## Status
-
-Tidig testversion. Funktioner och tillgänglighet behöver testas på olika telefoner innan bred användning.
+Materialet är avsett för reflektion och stödjande samtal. Vid akut fara ring 112.
