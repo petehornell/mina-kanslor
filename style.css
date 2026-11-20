@@ -98,3 +98,34 @@ textarea:focus-visible,select:focus-visible,button:focus-visible{outline:3px sol
 .conversation-actions .btn{width:100%;font-size:15px;padding:12px 8px}
 .conversation-random{width:100%;margin:3px 0 16px}
 @media(max-width:390px){.conversation-card{padding:20px 15px}.conversation-actions .btn{font-size:13px}}
+
+
+/* v2.5 – mobilfix för inställningar och säkerhetskopiering.
+   Filväljaren har en stor inbyggd minbredd i iOS Safari. */
+html{max-width:100%;overflow-x:clip}
+body,#app{width:100%;min-width:0;max-width:100%;overflow-x:clip}
+header{width:100%;min-width:0;gap:8px}
+header .brand{min-width:0;flex:1 1 auto}
+header .brand > div{min-width:0}
+header .brand strong,header .brand small{overflow-wrap:anywhere}
+header .logo{flex:0 0 auto}
+.header-actions{flex:0 1 auto;min-width:0}
+.header-actions .role-switch{max-width:100%;min-width:0;white-space:normal;line-height:1.2}
+.header-actions .iconbtn{flex:0 0 auto}
+main,#view{width:100%;min-width:0;max-width:740px}
+.card,.hero,.notice,.actions{min-width:0;max-width:100%}
+input[type="file"]{display:block;box-sizing:border-box;min-width:0;max-width:100%;width:100%;font-size:15px;overflow:hidden;color:#17333b;padding:9px 0}
+input[type="file"]::file-selector-button{max-width:100%;border:1px solid #b5ccc4;border-radius:10px;background:#e6eeec;color:#173f43;padding:11px 12px;margin-right:8px;font:inherit;font-weight:650}
+input[type="password"],input[type="text"],textarea,select{min-width:0;max-width:100%;box-sizing:border-box}
+.actions > .btn{max-width:100%;min-width:0;white-space:normal;text-align:center;overflow-wrap:anywhere}
+@media(max-width:480px){
+  header{padding:12px 13px;gap:7px}
+  .brand{gap:7px}
+  .brand strong{font-size:16px}
+  .brand small{font-size:11px}
+  .logo{font-size:26px}
+  .header-actions{gap:6px}
+  .role-switch{font-size:11px;padding:8px;max-width:118px}
+  .iconbtn{padding:8px 10px}
+  .card{padding:17px 15px}
+}
