@@ -12,3 +12,16 @@
 .body-legend{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
 .bodymap .body-toggle{position:static;font-size:14px;padding:8px 11px;background:white;border:1px solid #adcac0;border-radius:20px}
 .bodymap .body-toggle.on{background:#126f69;color:white;border-color:#126f69}
+
+/* v2: detailed body map and new workbook sections */
+.section-head{display:flex;align-items:center;gap:10px;margin:27px 0 11px}.section-head h2{margin:0;font-size:21px}.section-head span{font-size:12px;letter-spacing:.08em;color:#28756c;font-weight:800}
+.detailed-body{padding:18px 15px}.body-view-tabs{display:flex;gap:10px;justify-content:center;margin-bottom:13px}.body-view-tabs .chip{min-width:115px;font-weight:700}
+.body-drawing{display:block;width:min(100%,280px);height:auto;margin:10px auto;overflow:visible;touch-action:manipulation;cursor:crosshair;user-select:none}
+.body-surface{cursor:crosshair}.body-surface path,.body-surface circle{fill:#dbece6;stroke:#397e74;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round;pointer-events:visiblePainted}
+.body-surface:hover path,.body-surface:hover circle{fill:#cbe8dd}.body-hint{fill:none;stroke:#80b0a7;stroke-width:1.7;stroke-linecap:round;pointer-events:none}
+.body-dot{pointer-events:none;filter:drop-shadow(0 1px 2px #203e4666)}.body-mark-count{text-align:center;font-size:14px;font-weight:650;color:#316e67;margin:5px 0 18px}
+.body-location-buttons{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 19px}.body-location-buttons .chip{font-size:14px;padding:9px 11px}
+.detailed-body h3{margin:18px 0 9px;font-size:17px}.sensation{display:inline-flex;align-items:center;gap:7px;font-size:14px;padding:9px 11px}.sense-dot{display:inline-block;border-radius:50%;height:12px;width:12px;flex-shrink:0;border:1px solid #0002}
+.body-empty-choice{margin-top:18px;border-top:1px solid #dcebe5;padding-top:10px}.body-empty-choice .check{margin:0}.body-empty-choice .muted{margin:1px 0 0 30px}
+textarea:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid #ddad53;outline-offset:3px}
+@media(max-width:440px){.detailed-body{padding:15px 12px}.body-drawing{width:min(100%,260px)}.body-location-buttons .chip{font-size:13px}}
