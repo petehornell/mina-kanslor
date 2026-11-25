@@ -29,6 +29,8 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+      - name: Vänta på att artefakten blir tillgänglig
+        run: sleep 15
       - name: Publicera
         id: deployment
         uses: actions/deploy-pages@v4
