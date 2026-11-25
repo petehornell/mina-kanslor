@@ -2,40 +2,93 @@
 <html lang="sv"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Mikroskopets delar</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#edf4f6;color:#16333e;font:18px/1.5 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:20px}h1{font-size:clamp(28px,5vw,40px);margin:4px 0}p{margin:8px 0 18px}button{font:inherit;border:2px solid #bfd1d7;border-radius:12px;background:white;color:inherit;padding:12px;cursor:pointer;touch-action:manipulation}button:focus-visible{outline:4px solid #f6b642;outline-offset:3px}button.active,button.primary{background:#176a78;color:white;border-color:#176a78}nav{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}.card{background:white;border-radius:20px;padding:20px;box-shadow:0 3px 15px #16333e0b}.drawing{padding:8px}svg{width:100%;max-height:570px}svg .part{fill:#dce6e9;stroke:#334e58;stroke-width:3}svg .mark{cursor:pointer}svg .mark circle{fill:#176a78;stroke:white;stroke-width:3}svg .mark text{fill:white;font:bold 19px system-ui;text-anchor:middle;dominant-baseline:central;pointer-events:none}svg .mark.selected circle{fill:#be5b11;stroke:#ffda86;stroke-width:5}.answers{display:grid;gap:9px}.answers button{text-align:left;font-size:17px}#feedback{min-height:64px;padding:12px 0;font-weight:600}.correct{background:#e0f5e7!important;border-color:#25814a!important}.wrong{background:#fff0df!important;border-color:#b86618!important}progress{width:100%;height:16px;accent-color:#176a78}.small{font-size:15px;color:#4c6873}#hint{background:#edf4f6;padding:12px;border-radius:10px}#next{width:100%}@media(max-width:650px){main{padding:12px}.layout{grid-template-columns:1fr;gap:12px}.card{padding:15px}.drawing svg{max-height:350px}nav button{flex:1}.answers{grid-template-columns:1fr 1fr}.answers button{font-size:15px;padding:10px;overflow-wrap:anywhere}h2{font-size:23px;margin:6px 0}}
-</style>
+svg .mark{cursor:default}svg .leader{stroke:#7c929e;stroke-width:2}svg .mark .endpoint{fill:#7c929e;stroke:white;stroke-width:1}svg .mark.selected .leader{stroke:#bd570d;stroke-width:4}svg .mark.selected .endpoint{fill:#bd570d;stroke:white;stroke-width:2}svg .mark:not(.selected){opacity:.58}.drawing{background:#fff}.drawing svg{max-height:670px}@media(max-width:650px){.drawing svg{max-height:none;display:block}.drawing{padding:6px}.layout{gap:14px}} </style>
 <main><div class="small">NO · Träna i din egen takt</div><h1>Mikroskopets delar</h1><p>Lär dig nio delar. Välj namnet som passar till den orange markeringen.</p>
 <nav aria-label="Välj läge"><button id="learn" class="active">Träna</button><button id="test">Testa dig</button><button id="restart">Börja om</button></nav>
 <div class="layout"><section class="card drawing" aria-label="Skiss av ett mikroskop">
-<svg viewBox="0 0 480 540" role="img" aria-labelledby="st sd"><title id="st">Mikroskop med nio numrerade delar</title><desc id="sd">Ett monokulärt mikroskop. Numren motsvarar delarna i övningen.</desc>
-<g class="part">
-<path d="M120 450 L340 420 410 472 410 510 120 520 60 487 60 456Z"/>
-<path d="M310 430V190L220 160 230 130 350 170V440Z"/>
-<path d="M175 151L268 35 293 55 208 174Z"/><path d="M263 40L277 20Q284 15 303 31L295 55Z" fill="#738e99"/>
-<path d="M120 140L183 119 245 162 239 199 160 218 116 190Z"/>
-<path d="M161 211L236 193 249 216 171 239Z" fill="#738e99"/>
-<path d="M172 232L153 266 168 279 193 242Z"/><path d="M201 231L192 284 216 289 226 228Z"/><path d="M230 222L238 273 258 269 253 215Z"/>
-<path d="M94 305L267 279 330 307 151 343 94 327Z"/><path d="M145 301L210 291 233 303 165 316Z" fill="white"/>
-<ellipse cx="211" cy="341" rx="44" ry="12"/><path d="M175 343L130 354 131 364 178 353Z"/>
-<circle cx="349" cy="288" r="30"/><circle cx="349" cy="288" r="22" fill="#a8bdc5"/>
-<circle cx="332" cy="378" r="15"/><circle cx="332" cy="378" r="8" fill="#a8bdc5"/>
-<path d="M172 438V400H253V438Q212 461 172 438Z"/><ellipse cx="212" cy="400" rx="40" ry="15"/><ellipse cx="212" cy="400" rx="26" ry="8" fill="white"/>
+<svg viewBox="0 0 600 700" role="img" aria-labelledby="st sd"><title id="st">Mikroskop med nio numrerade delar</title><desc id="sd">Detaljerad skiss med linjer från numren till respektive del. Den aktuella delen är orange.</desc>
+<defs>
+<linearGradient id="body" x1="0" x2="1"><stop stop-color="#fafbfc"/><stop offset=".6" stop-color="#dbe2e7"/><stop offset="1" stop-color="#b2c0ca"/></linearGradient>
+<linearGradient id="metal"><stop stop-color="#748894"/><stop offset=".3" stop-color="#f8fafc"/><stop offset=".6" stop-color="#b6c2ca"/><stop offset="1" stop-color="#536b79"/></linearGradient>
+<linearGradient id="dark"><stop stop-color="#253946"/><stop offset=".5" stop-color="#59717e"/><stop offset="1" stop-color="#203540"/></linearGradient>
+</defs>
+<g stroke="#293e4b" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+<!-- Stativ bakom optik och objektbord -->
+<path fill="#aebdc7" d="M349 276L439 299V579L390 591V326L318 299Z"/>
+<path fill="url(#body)" d="M333 265L407 280 439 299 390 314 318 287Z"/>
+<path fill="#7b929f" d="M390 314L439 299V579L390 591Z"/>
+<!-- Fot i stabilt perspektiv -->
+<path fill="url(#body)" d="M139 580L393 547 491 601 240 664 105 614Z"/>
+<path fill="#a6b7c2" d="M105 614L240 664V691L105 641Z"/>
+<path fill="#7d94a2" d="M240 664L491 601V629L240 691Z"/>
+<!-- Lamphus -->
+<ellipse fill="#d3dce2" cx="278" cy="585" rx="62" ry="19"/>
+<path fill="url(#dark)" d="M225 575V527H331V575C327 597 230 599 225 575Z"/>
+<ellipse fill="#263e4a" cx="278" cy="527" rx="53" ry="18"/>
+<ellipse fill="#fff9df" cx="278" cy="527" rx="32" ry="10"/>
+<!-- Mekanism under objektbord -->
+<path fill="url(#dark)" d="M360 430H390V554L359 561Z"/>
+<path fill="#7f929c" d="M249 443H310V460C300 475 260 475 249 460Z"/>
+<ellipse fill="#536c78" cx="279" cy="447" rx="42" ry="13"/>
+<path fill="url(#metal)" d="M250 454L196 462V473L250 465Z"/>
+<!-- Objektbord -->
+<path fill="#667f8d" d="M139 410L334 375 402 413 206 454Z"/>
+<path fill="#a2b4c0" d="M139 410V428L206 472V454Z"/>
+<path fill="#829ba9" d="M206 454L402 413V431L206 472Z"/>
+<ellipse fill="#203844" cx="280" cy="418" rx="13" ry="5"/>
+<!-- Objektglas och preparat synligt under objektivet -->
+<path fill="#e8f4fa" d="M212 405L283 392 310 405 238 420Z"/>
+<path fill="#91a9b6" stroke-width="1.5" d="M215 411L238 420 310 405V409L238 425 215 415Z"/>
+<ellipse fill="#d78583" stroke="#924f57" stroke-width="1.5" cx="266" cy="406" rx="9" ry="3"/>
+<!-- Klämmor -->
+<path fill="none" stroke="#dce4e9" stroke-width="7" d="M175 412L199 423 225 418M328 414L355 408 355 397"/>
+<path fill="none" stroke-width="2" d="M175 412L199 423 225 418M328 414L355 408 355 397"/>
+<!-- Okulartub, vinklad som förlagan -->
+<path fill="url(#metal)" d="M292 213L374 74 401 91 320 233Z"/>
+<path fill="url(#dark)" d="M371 78L386 52Q394 44 409 55Q421 63 417 73L402 98Z"/>
+<path fill="none" stroke="#9aadb9" stroke-width="2" d="M380 74L393 53M387 79L400 57M394 84L407 62M401 88L414 68"/>
+<ellipse fill="#182c38" cx="400" cy="58" rx="15" ry="7" transform="rotate(32 400 58)"/>
+<!-- Huvud -->
+<path fill="url(#body)" d="M218 209L282 185 336 218 352 255 292 280 214 260Z"/>
+<path fill="#b3c1ca" d="M292 280L352 255V276L294 300Z"/>
+<path fill="url(#body)" d="M214 260L292 280 294 300 219 281Z"/>
+<!-- Revolver och objektiv -->
+<path fill="url(#dark)" d="M232 292Q265 279 311 297L322 314Q282 339 232 321Z"/>
+<path fill="#b9c6cf" d="M232 321Q277 339 322 314L323 328Q281 353 233 335Z"/>
+<path fill="url(#metal)" d="M240 333L213 367Q210 374 222 383Q231 388 236 381L263 345Z"/>
+<path fill="url(#metal)" d="M269 343L258 376Q258 386 277 389L289 350Z"/>
+<path fill="url(#metal)" d="M296 342L299 391Q306 400 321 392L320 334Z"/>
+<path fill="#304955" d="M299 382L321 378V391Q310 402 300 393Z"/>
+<path fill="none" stroke="#e6b64f" stroke-width="4" d="M300 370L320 366"/>
+<path fill="none" stroke="#c56161" stroke-width="4" d="M225 351L244 365"/>
+<path fill="none" stroke="#73a7bf" stroke-width="4" d="M264 363L282 368"/>
+<!-- Skruvar -->
+<path fill="url(#metal)" d="M421 444L445 437V463L421 470Z"/>
+<ellipse fill="url(#dark)" cx="445" cy="450" rx="29" ry="36"/>
+<ellipse fill="#bac8d1" cx="452" cy="448" rx="23" ry="30"/>
+<ellipse fill="url(#body)" cx="454" cy="448" rx="17" ry="24"/>
+<path fill="none" stroke="#91a6b2" stroke-width="2" d="M426 428L434 429M421 437L429 438M419 447L427 448M420 457L428 458M424 467L432 468"/>
+<ellipse fill="url(#dark)" cx="410" cy="529" rx="14" ry="19"/>
+<ellipse fill="url(#metal)" cx="415" cy="527" rx="10" ry="14"/>
+<ellipse fill="#627d8c" cx="417" cy="527" rx="5" ry="8"/>
 </g><g id="markers"></g></svg></section>
 <section class="card"><div id="status" class="small"></div><progress id="progress" max="9" value="0" aria-label="Antal besvarade delar"></progress><h2 id="question"></h2><p id="hint"></p><button id="speak" style="margin-bottom:12px">🔊 Läs upp</button><div class="answers" id="answers"></div><div id="feedback" role="status" aria-live="polite"></div><button id="next" class="primary" hidden>Nästa del →</button></section></div><p class="small" style="margin-top:20px">Preparat är det som undersöks, vanligtvis på ett objektglas. Skissen visar ett exempel; mikroskop kan se olika ut. Inga svar skickas eller sparas.</p></main>
 <script>
 const parts=[
-['Okular','Här tittar du in i mikroskopet.',[300,22]],
-['Objektivrevolver','Den vrids för att byta objektiv.',[132,222]],
-['Objektiv','Linser nära preparatet. Olika objektiv ger olika förstoring.',[267,252]],
-['Preparat','Det som ska undersökas. Här ligger det på ett objektglas.',[149,285]],
-['Objektbord','Bordet där objektglaset ligger.',[92,320]],
-['Bländare','Reglerar ljusöppningen under objektbordet.',[113,365]],
-['Ljuskälla','Lyser upp preparatet underifrån.',[167,419]],
-['Grovinställningsskruv','Den stora skruven används för grov fokusering.',[391,286]],
-['Fininställningsskruv','Den lilla skruven används för noggrann fokusering.',[370,380]]
+['Okular','Här tittar du in i mikroskopet.',[510,70]],
+['Objektivrevolver','Den vrids för att byta objektiv.',[95,295]],
+['Objektiv','Linser nära preparatet. Olika objektiv ger olika förstoring.',[95,350]],
+['Preparat','Det som ska undersökas. Här ligger det på ett objektglas.',[95,400]],
+['Objektbord','Bordet där objektglaset ligger.',[95,450]],
+['Bländare','Reglerar ljusöppningen under objektbordet.',[95,495]],
+['Ljuskälla','Lyser upp preparatet underifrån.',[95,568]],
+['Grovinställningsskruv','Den stora skruven används för grov fokusering.',[518,434]],
+['Fininställningsskruv','Den lilla skruven används för noggrann fokusering.',[518,528]]
 ];
 const $=id=>document.getElementById(id);let mode='learn',order=[],at=0,score=0,locked=false,first=true;
 const shuffle=a=>a.slice().sort(()=>Math.random()-.5);
-parts.forEach((p,i)=>{let g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('class','mark');g.id='mark'+i;g.innerHTML='<line x1="'+p[2][0]+'" y1="'+p[2][1]+'" x2="'+[[285,37],[192,220],[245,257],[185,301],[127,323],[150,355],[201,420],[349,288],[332,378]][i][0]+'" y2="'+[[285,37],[192,220],[245,257],[185,301],[127,323],[150,355],[201,420],[349,288],[332,378]][i][1]+'" stroke="#176a78" stroke-width="2"/><circle cx="'+p[2][0]+'" cy="'+p[2][1]+'" r="18"/><text x="'+p[2][0]+'" y="'+p[2][1]+'">'+(i+1)+'</text>';$('markers').append(g)});
+const targets=[[403,72],[250,310],[229,366],[266,406],[163,433],[207,464],[260,545],[455,448],[416,527]];
+parts.forEach((p,i)=>{let g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('class','mark');g.id='mark'+i;g.innerHTML='<path class="leader" d="M'+p[2][0]+' '+p[2][1]+' L'+targets[i][0]+' '+targets[i][1]+'" fill="none"/><circle class="endpoint" cx="'+targets[i][0]+'" cy="'+targets[i][1]+'" r="4"/><circle cx="'+p[2][0]+'" cy="'+p[2][1]+'" r="20"/><text x="'+p[2][0]+'" y="'+p[2][1]+'">'+(i+1)+'</text>';$('markers').append(g)});
 function start(m){mode=m;order=m==='test'?shuffle(parts.map((_,i)=>i)):parts.map((_,i)=>i);at=0;score=0;$('learn').classList.toggle('active',m==='learn');$('test').classList.toggle('active',m==='test');show()}
 function show(){locked=false;first=true;$('next').hidden=true;$('feedback').textContent='';$('progress').value=at;document.querySelectorAll('.mark').forEach(g=>g.classList.remove('selected'));
 if(at===9){$('question').textContent=mode==='test'?score+' av 9 rätt på första försöket':'Alla nio delar är tränade!';$('status').textContent='Klart';$('hint').hidden=false;$('hint').textContent=score===9?'Du satte alla på första försöket!':'Varje övning hjälper. Ta gärna en runda till.';$('answers').replaceChildren();$('speak').hidden=true;$('next').hidden=false;$('next').textContent='Kör en gång till';$('progress').value=9;return}
