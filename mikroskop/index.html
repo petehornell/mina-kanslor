@@ -86,7 +86,7 @@ const parts=[
 ['Fininställningsskruv','Den lilla skruven används för noggrann fokusering.',[518,528]]
 ];
 const $=id=>document.getElementById(id);let mode='learn',order=[],at=0,score=0,locked=false,first=true;
-const shuffle=a=>a.slice().sort(()=>Math.random()-.5);
+const shuffle=a=>{const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
 const targets=[[403,72],[250,310],[229,366],[266,406],[163,433],[207,464],[260,545],[455,448],[416,527]];
 parts.forEach((p,i)=>{let g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('class','mark');g.id='mark'+i;g.innerHTML='<path class="leader" d="M'+p[2][0]+' '+p[2][1]+' L'+targets[i][0]+' '+targets[i][1]+'" fill="none"/><circle class="endpoint" cx="'+targets[i][0]+'" cy="'+targets[i][1]+'" r="4"/><circle cx="'+p[2][0]+'" cy="'+p[2][1]+'" r="20"/><text x="'+p[2][0]+'" y="'+p[2][1]+'">'+(i+1)+'</text>';$('markers').append(g)});
 function start(m){mode=m;order=m==='test'?shuffle(parts.map((_,i)=>i)):parts.map((_,i)=>i);at=0;score=0;$('learn').classList.toggle('active',m==='learn');$('test').classList.toggle('active',m==='test');show()}
